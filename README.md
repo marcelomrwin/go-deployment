@@ -84,20 +84,23 @@ route "go-deployment" created
 
         $ oc scale dc/go-deployment --replicas=3
 
-3.  Trigger a new deployment automatically by tagging a newer version of the example image as the `latest` tag:
-
-        $ oc tag --source=docker marcelodsales/go-deployment:v2 go-deployment:latest
+3.  Trigger a new deployment automatically by tagging a newer version of the example:
+	
+	a. 	Open deployment-example in the editor:
+	
+		`oc edit dc go-deployment`
+	b. Scroll down to the imageChangeParams section near the bottom of the file.
+	
+	c. Change the name of the ImageStreamTag to deployment-example-is:v2:
+	
+	d. Save the file and exit the editor.
+>	Saving the file triggers a new deployment because editing the file results in a configuration change.	
 
 4.  In your browser, refresh the page until you see the 'v2' image.
 
 5.  If you are using the CLI, the `oc rollout status go-deployment` command will show you how many pods are on version 1 and how many are on version 2. In the web console, you should see the pods slowly being added to v2 and removed from v1.
 
 During the deployment process, the new replication controller is incrementally scaled up. Once the new pods are marked as *ready* (because they pass their readiness check), the deployment process will continue. If the pods do not become ready, the process will abort, and the deployment config will be rolled back to its previous version.
-
-
-#### Rolling deployment variants
-
-Coming soon!
 
 
 ### Recreate Deployment
