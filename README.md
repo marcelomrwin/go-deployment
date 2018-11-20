@@ -62,17 +62,27 @@ Rolling deployments are the default in OpenShift. To see a rolling update, follo
 
 1.  Create an application based on the example deployment images:
 
-        $ oc new-app marcelodsales/go-deployment
+        $ oc process -f go-deployment-template.json | oc create -f -
 
-    If you have the router installed, make the application available via a route (or use the service IP directly)
 
-        $ oc expose svc/deployment-example
+***Sample Output***
+       
+```[console]
+imagestream "go-deployment-is" created
+deploymentconfig "go-deployment" created
+service "go-deployment" created
+route "go-deployment" created
+```     
 
-    Browse to the application at `deployment-example.<project>.<router_domain>` to verify you see the 'v1' image.
+   If you have the router installed, make the application available via a route (or use the service IP directly)
+
+        $ oc expose svc/go-deployment
+
+   Browse to the application at `deployment-example.<project>.<router_domain>` to verify you see the 'v1' image.
 
 2.  Scale the deployment config up to three instances:
 
-        $ oc scale dc/deployment-example --replicas=3
+        $ oc scale dc/go-deployment --replicas=3
 
 3.  Trigger a new deployment automatically by tagging a newer version of the example image as the `latest` tag:
 

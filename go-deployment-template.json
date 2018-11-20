@@ -1,0 +1,144 @@
+{
+  "kind": "Template",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "go-deployment-template.json"
+  },
+  "objects": [{
+      "kind": "ImageStream",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "go-deployment-is"
+      },
+      "spec": {
+        "tags": [{
+            "name": "v1",
+            "from": {
+              "kind": "DockerImage",
+              "name": "marcelodsales/go-deployment:v1"
+            }
+          },
+          {
+            "name": "v2",
+            "from": {
+              "kind": "DockerImage",
+              "name": "marcelodsales/go-deployment:v2"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "DeploymentConfig",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "go-deployment",
+        "labels": {
+          "app": "go-deployment"
+        }
+      },
+      "spec": {
+        "replicas": 1,
+        "strategy": {
+          "type": "Rolling",
+          "rollingParams": {
+            "updatePeriodSeconds": 5,
+            "intervalSeconds": 1,
+            "timeoutSeconds": 600,
+            "maxUnavailable": "25%",
+            "maxSurge": "25%"
+          },
+          "resources": {}
+        },
+        "triggers": [{
+            "type": "ConfigChange"
+          },
+          {
+            "type": "ImageChange",
+            "imageChangeParams": {
+              "automatic": true,
+              "containerNames": [
+                "go-deployment"
+              ],
+              "from": {
+                "kind": "ImageStream",
+                "name": "go-deployment-is:v1"
+              }
+            }
+          }
+        ],
+        "selector": {
+          "app": "go-deployment",
+          "deploymentconfig": "go-deployment"
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app": "go-deployment",
+              "deploymentconfig": "go-deployment"
+            }
+          },
+          "spec": {
+            "containers": [{
+              "name": "go-deployment",
+              "image": "marcelodsales/go-deployment:v1",
+              "ports": [{
+                "containerPort": 8080,
+                "protocol": "TCP"
+              }],
+              "resources": {},
+              "terminationMessagePath": "/dev/termination-log",
+              "imagePullPolicy": "IfNotPresent"
+            }],
+            "restartPolicy": "Always",
+            "terminationGracePeriodSeconds": 30,
+            "dnsPolicy": "ClusterFirst",
+            "securityContext": {}
+          }
+        }
+      },
+      "status": {}
+    },
+    {
+      "kind": "Service",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "go-deployment",
+        "creationTimestamp": null,
+        "labels": {
+          "app": "go-deployment"
+        }
+      },
+      "spec": {
+        "ports": [{
+          "name": "8080-tcp",
+          "protocol": "TCP",
+          "port": 8080,
+          "targetPort": 8080
+        }],
+        "selector": {
+          "app": "go-deployment",
+          "deploymentconfig": "go-deployment"
+        },
+        "type": "ClusterIP",
+        "sessionAffinity": "None"
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    },
+    {
+      "kind": "Route",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "go-deployment"
+      },
+      "spec": {
+        "to": {
+          "kind": "Service",
+          "name": "go-deployment"
+        }
+      }
+    }
+  ]
+}
