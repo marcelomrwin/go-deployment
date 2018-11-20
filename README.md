@@ -1,9 +1,11 @@
 Running in Docker
 =================
-```
+```bash
 docker build -t go-deployment -f Dockerfile-alpine-multistage-scratch .
 docker run --rm -it -p 8080:8080 go-deployment
 ```
+
+	$ another bash example
 
 Deploying in OpenShift
 ======================
