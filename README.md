@@ -2,7 +2,12 @@ Running in Docker
 =================
 	$ docker build -t go-deployment -f Dockerfile-alpine-multistage-scratch .
 	$ docker run --rm -it -p 8080:8080 go-deployment
-
+	$ docker build -t go_deployment:v1 -f Dockerfile-alpine-multistage-scratch .
+	$ docker build -t go_deployment:v2 -f Dockerfile-alpine-multistage-scratch-v2 .
+	$ docker images ...
+	$ docker tag <IMAGE_ID> marcelodsales/go_deployment:v1
+	$ docker tag <IMAGE_ID-V2> marcelodsales/go_deployment:v2
+ 
 Deploying in OpenShift
 ======================
 
@@ -52,7 +57,7 @@ Rolling deployments are the default in OpenShift. To see a rolling update, follo
 
 1.  Create an application based on the example deployment images:
 
-        $ oc new-app openshift/deployment-example
+        $ oc new-app marcelodsales/go_deployment
 
     If you have the router installed, make the application available via a route (or use the service IP directly)
 
@@ -66,7 +71,7 @@ Rolling deployments are the default in OpenShift. To see a rolling update, follo
 
 3.  Trigger a new deployment automatically by tagging a newer version of the example image as the `latest` tag:
 
-        $ oc tag --source=docker openshift/deployment-example:v2 deployment-example:latest
+        $ oc tag --source=docker marcelodsales/go_deployment:v2 deployment-example:latest
 
 4.  In your browser, refresh the page until you see the 'v2' image.
 
@@ -141,8 +146,8 @@ A route points to a service, and can be changed to point to a different service 
 
 1.  Create two copies of the example application
 
-        $ oc new-app openshift/deployment-example:v1 --name=bluegreen-example-old
-        $ oc new-app openshift/deployment-example:v2 --name=bluegreen-example-new
+        $ oc new-app marcelodsales/go_deployment:v1 --name=bluegreen-example-old
+        $ oc new-app marcelodsales/go_deployment:v2 --name=bluegreen-example-new
 
     This will create two independent application components - one running the `v1` image under the `bluegreen-example-old` service, and one using the `v2` image under the `bluegreen-example-new` service.
 
@@ -191,7 +196,7 @@ OpenShift, through labels and deployment configurations, can support multiple si
 
 1.  Create the first shard of the application based on the example deployment images:
 
-        $ oc new-app openshift/deployment-example --name=ab-example-a --labels=ab-example=true SUBTITLE="shard A"
+        $ oc new-app marcelodsales/go_deployment --name=ab-example-a --labels=ab-example=true SUBTITLE="shard A"
 
 2.  Edit the newly created shard to set a label `ab-example=true` that will be common to all shards:
 
@@ -215,7 +220,7 @@ OpenShift, through labels and deployment configurations, can support multiple si
 
 5.  Create a second shard based on the same source image as the first shard but different tagged version, and set a unique value:
 
-        $ oc new-app openshift/deployment-example:v2 --name=ab-example-b --labels=ab-example=true SUBTITLE="shard B" COLOR="red"
+        $ oc new-app marcelodsales/go_deployment:v2 --name=ab-example-b --labels=ab-example=true SUBTITLE="shard B" COLOR="red"
 
 6.  Edit the newly created shard to set a label `ab-example=true` that will be common to all shards:
 
