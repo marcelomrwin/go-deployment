@@ -78,7 +78,7 @@ route "go-deployment" created
 
         $ oc expose svc/go-deployment
 
-   Browse to the application at `deployment-example.<project>.<router_domain>` to verify you see the 'v1' image.
+   Browse to the application at `go-deployment.<project>.<router_domain>` to verify you see the 'v1' image.
 
 2.  Scale the deployment config up to three instances:
 
@@ -86,11 +86,11 @@ route "go-deployment" created
 
 3.  Trigger a new deployment automatically by tagging a newer version of the example image as the `latest` tag:
 
-        $ oc tag --source=docker marcelodsales/go-deployment:v2 deployment-example:latest
+        $ oc tag --source=docker marcelodsales/go-deployment:v2 go-deployment:latest
 
 4.  In your browser, refresh the page until you see the 'v2' image.
 
-5.  If you are using the CLI, the `oc rollout status deployment-example` command will show you how many pods are on version 1 and how many are on version 2. In the web console, you should see the pods slowly being added to v2 and removed from v1.
+5.  If you are using the CLI, the `oc rollout status go-deployment` command will show you how many pods are on version 1 and how many are on version 2. In the web console, you should see the pods slowly being added to v2 and removed from v1.
 
 During the deployment process, the new replication controller is incrementally scaled up. Once the new pods are marked as *ready* (because they pass their readiness check), the deployment process will continue. If the pods do not become ready, the process will abort, and the deployment config will be rolled back to its previous version.
 
