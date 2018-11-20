@@ -6,7 +6,12 @@ Running in Docker
 	$ docker build -t go-deployment:v2 -f Dockerfile-alpine-multistage-scratch-v2 .
 	$ docker images ...
 	$ docker tag <IMAGE_ID> marcelodsales/go-deployment:v1
+	$ docker tag <IMAGE_ID> marcelodsales/go-deployment:latest
 	$ docker tag <IMAGE_ID-V2> marcelodsales/go-deployment:v2
+	$ docker login --username=<USER_NAME> -p <PASSWORD>
+	$ docker push marcelodsales/go-deployment:v1
+	$ docker push marcelodsales/go-deployment:v2
+	$ docker push marcelodsales/go-deployment:latest
 
 Deploying in OpenShift
 ======================
